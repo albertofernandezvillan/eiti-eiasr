@@ -3,19 +3,45 @@ package eiasr;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
 public class HogUtils {
 	
 	static final int ddepth = CvType.CV_32F;
-//  Mat mag = new Mat();
-//  Mat angle = new Mat(); 
-//  Core.cartToPolar(gx, gy, mag, angle); 
-//  
-//  Mat grad = new Mat();
-//  Core.convertScaleAbs(mag, grad);
+	
+	public static Grad calculateGradient(Mat img, Rect rect){
+		Mat mag = new Mat();
+		Mat angle = new Mat();
+		
+		// calculate gradient for whole image
+		calculateGradient(img, mag, angle);
+		
+//		//Printing
+//        System.out.println("Gradient magnitude:");
+//        System.out.println(mag.dump());
+//        PrintUtils.printImageInfo("mag", mag);
+//             
+//        System.out.println("Gradient angle:");
+//        System.out.println(angle.dump());
+//        PrintUtils.printImageInfo("angle", angle);
+		
+		// trim matrixes of gradient magnitudes and angles to given rect
+		Grad grad = new Grad(mag, angle);
+        grad.submat(rect);
+		
+//		//Printing
+//        System.out.println("Gradient magnitude:");
+//        System.out.println(grad.getMag().dump());
+//        PrintUtils.printImageInfo("grad.getMag()", grad.getMag());
+//             
+//        System.out.println("Gradient angle:");
+//        System.out.println(grad.getAngle());
+//        PrintUtils.printImageInfo("grad.getAngle()", grad.getAngle());
+		return grad;
+	}
 
-	public static void calculateGradient(Mat img, Mat grad, Mat angle){
+	public static void calculateGradient(Mat img, Mat mag, Mat angle){
 		
 		Mat grayImg = new Mat();
 		Mat gx = new Mat();
@@ -35,10 +61,11 @@ public class HogUtils {
 		Core.convertScaleAbs(gy, abs_gy);
 		
 		// convert cartesian gradients to magnitude and angle
-		Mat mag = new Mat();
-		Core.cartToPolar(gx, gy, mag, angle); 
+		Mat tempMag = new Mat();
+		Core.cartToPolar(gx, gy, tempMag, angle, true); 
 
-		Core.convertScaleAbs(mag, grad);
+		Core.convertScaleAbs(tempMag, mag);
+		
 	}
 	
 	
@@ -74,8 +101,4 @@ public class HogUtils {
 		return abs_gy;
 	}
 	
-	
-	
-	
-    
 }

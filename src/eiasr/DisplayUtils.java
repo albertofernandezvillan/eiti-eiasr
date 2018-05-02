@@ -10,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
 public class DisplayUtils {
 	
@@ -33,6 +35,15 @@ public class DisplayUtils {
     public static void displayImage(Mat mat, int x, int y) {
      	
     	Image img = MatToImage(mat);					// convert Mat to Image	
+    	JFrame frame = displayImageInFrame(img);		// display image
+    	frame.setLocation(x, y);						// set position on screen in pixels
+    }
+    
+    public static void displayImage(Mat mat, int x, int y, Size size) {
+
+        Mat display = new Mat();
+        Imgproc.resize( mat, display, size);			// resize to display
+    	Image img = MatToImage(display);				// convert Mat to Image	
     	JFrame frame = displayImageInFrame(img);		// display image
     	frame.setLocation(x, y);						// set position on screen in pixels
     }
