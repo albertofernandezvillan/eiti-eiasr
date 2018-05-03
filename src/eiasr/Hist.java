@@ -33,6 +33,9 @@ public class Hist {
 	public double getBinVal(int index) {
 		return this.bins[index];
 	}
+	public void setBinVal(double val, int index) {
+		this.bins[index] = val;
+	}
 	
 	public void addToBin(double addValue, int index) {
 		this.bins[index] = this.bins[index] + addValue;

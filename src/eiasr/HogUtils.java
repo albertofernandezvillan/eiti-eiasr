@@ -17,34 +17,46 @@ public class HogUtils {
 	 * @return 		Histogram (Hist) object
 	 * @see Hist
 	 */
-	public static Hist calculateHog(Grad grad) {
+	public static Hist calculateHist(Grad grad) {
 		return new Hist(grad);
 	}
+	
+	public static Hist[][] calculateHist(Grad[][] grad) {
+		Hist[][] result = new Hist[grad.length][grad[0].length];
+		for(int i=0; i<grad.length; i++) {
+			for(int j=0; j<grad[0].length; j++) result[i][j] = new Hist(grad[i][j]);
+		}
+		return result;
+	}
+	
 	/**
 	 * 
 	 * @param hists
-	 * @param winWidth
-	 * @param winHeight
+	 * @param blockWidth
+	 * @param blockHeight
+	 * @param blockPosX
+	 * @param blockPosY
 	 * @return
 	 */
-	public static Hist[][] normHist(Hist[][] hists, int winWidth, int winHeight) {
-		Hist[][] result = new Hist[winWidth][winHeight];
-		for(int i=0; i<winWidth; i++) {
-			for(int j=0; j<winHeight; j++) result[i][j] = new Hist();
+	public static Hist[][] normHistOverBlock(Hist[][] hists, int blockWidth, int blockHeight, int blockPosX, int blockPosY) {
+		Hist[][] result = new Hist[blockWidth][blockHeight];
+		for(int i=0; i<blockWidth; i++) {
+			for(int j=0; j<blockHeight; j++) result[i][j] = new Hist();
 		}
 		
 		int sum = 0;
-		for(int j = 0; j<winWidth; j++){
-			for(int k = 0; k<winHeight; k++) {
+		for(int j=blockPosX; j<blockPosX+blockWidth; j++) {
+			for(int k=blockPosY; k<blockPosY+blockHeight; k++) {
 				for(int i=0; i<hists[j][k].getBins().length; i++) sum += hists[j][k].getBinVal(i);
 				//System.out.println(hists[j][k].toString());
 			}
 		}
 		
-		for(int j = 0; j<winWidth; j++){
-			for(int k = 0; k<winHeight; k++) {
-				for(int i=0; i<hists[j][k].getBins().length; i++) result[j][k].setBinVal(hists[j][k].getBinVal(i)/sum, i);
-				//System.out.println(result[j][k].toString());
+		for(int j=blockPosX; j<blockPosX+blockWidth; j++) {
+			for(int k=blockPosY; k<blockPosY+blockHeight; k++) {
+				
+				for(int i=0; i<hists[j][k].getBins().length; i++) result[j-blockPosX][k-blockPosY].setBinVal(hists[j][k].getBinVal(i)/sum, i);
+				//System.out.println(result[j-blockPosX][k-blockPosY].toString());
 			}
 		}
 		
@@ -68,19 +80,19 @@ public class HogUtils {
 	}
 	
 	public static Grad calculateGradient(Mat img, Rect rect){
-		Mat mag = new Mat();
-		Mat angle = new Mat();
+//		Mat mag = new Mat();
+//		Mat angle = new Mat();
 		
 		// calculate gradient for whole image
-		calculateGradient(img, mag, angle);
+		Grad grad = calculateGradient(img);
 		
-		Grad grad = new Grad(mag, angle);
+		//Grad grad = new Grad(mag, angle);
         grad.submat(rect);
 		
 		return grad;
 	}
 
-	public static void calculateGradient(Mat img, Mat mag, Mat angle){
+	public static Grad calculateGradient(Mat img){
 		
 		Mat grayImg = new Mat();
 		Mat gx = new Mat();
@@ -100,10 +112,16 @@ public class HogUtils {
 		Core.convertScaleAbs(gy, abs_gy);
 		
 		// convert cartesian gradients to magnitude and angle
+		Mat angle = new Mat();
 		Mat tempMag = new Mat();
 		Core.cartToPolar(gx, gy, tempMag, angle, true); 
-
+		
+		Mat mag = new Mat();
 		Core.convertScaleAbs(tempMag, mag);
+		
+		Grad grad = new Grad(mag, angle);
+		
+		return grad;
 		
 	}
 	

@@ -17,21 +17,23 @@ public class GradientDemo extends DisplayUtils {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		System.out.println(Core.NATIVE_LIBRARY_NAME.toString());
 
-		// showGradMag();
-		showGradInCell();
+		showGradFull();
+		
+		//showGradMag();
+		
 	}
 
-	private static void showGradInCell() {
+	private static void showGradFull() {
 		Size cellSize = new Size(8, 8);
 		Size size = new Size(64, 64); // image size for calculation
 		Size displaySize = new Size(256, 256); // image size for displaying
 		int displayOffsetX = (int) (displaySize.width + 50.0);
 
-		// ********************* LOAD IMAGE
+		// ********************* LOAD IMAGE *******************************
 		// ****************************************************************
 
 		// Read from file
-		Mat input = Imgcodecs.imread("GTSRB/Final_Training/Images/00013/00002_00023.ppm", CvType.CV_32F);
+		Mat input = Imgcodecs.imread("GTSRB/Final_Training/Images/00000/00002_00023.ppm", CvType.CV_32F);
 
 		// Print Info and Image
 		PrintUtils.printImageInfo("input", input);
@@ -40,22 +42,22 @@ public class GradientDemo extends DisplayUtils {
 		Size inputSize = input.size();
 		int displayPositionX = (int) (inputSize.width + 50.0);
 
-		// ********************* PREPROCESSING
+		// ********************* PREPROCESSING ***********************
 		// ************************************************************
 		// Mat inputBlur = new Mat();
 		// Imgproc.GaussianBlur(input, inputBlur, new Size(5, 5) ,1 ,1);
 		Mat inputBlur = input;
 
-		// ********************* RESIZE IMAGE
+		// ********************* RESIZE IMAGE ***************************
 		// **************************************************************
 		Mat mat = new Mat();
 		Imgproc.resize(inputBlur, mat, size);
 
-		// ********************* CHOOSE THE 8x8 CELL
-		// *******************************************************
+		// ********************* CHOOSE THE 8x8 CELL *******************
+		// *************************************************************
 
-		Point p1 = new Point(8, 8);
-		Point p2 = new Point(8 + cellSize.height, 8 + cellSize.width);
+		Point p1 = new Point(24, 24);
+		Point p2 = new Point(24 + cellSize.height, 24 + cellSize.width);
 		Rect cellRect = new Rect(p1, p2); // 8x8 cell definition
 
 		Mat displayMat = new Mat(); // make a copy for displaying
@@ -74,72 +76,25 @@ public class GradientDemo extends DisplayUtils {
 
 		displayPositionX += displayOffsetX;
 
-		// ***************** CALCULATE GRADIENT IN CELL
-		// ***********************************************
-
-		// Mat mag = new Mat(); // gradient magnitude
-		// Mat angle = new Mat(); // gradient angle
+		// ***************** CALCULATE GRADIENT IN CELL *****************************
+		// ************************************************************************
 
 		// calculate Gradient magnitude and angle and print
 		Grad grad = HogUtils.calculateGradient(mat, cellRect);
-
-		// //Printing
-		// System.out.println("Gradient magnitude:");
-		// System.out.println(grad.getMag().dump());
-		// PrintUtils.printImageInfo("grad.getMag()", grad.getMag());
-		//
-		// System.out.println("Gradient angle:");
-		// System.out.println(grad.getAngle().dump());
-		// PrintUtils.printImageInfo("grad.getAngle()", grad.getAngle());
 
 		// Displaying
 		DisplayUtils.displayImage(grad.getMag(), displayPositionX, 0, displaySize);
 
 		displayPositionX += displayOffsetX;
 
-		// ******************** DISPLAY CELL WITH GRADIENT VECTORS
-		// ******************************************
-		Mat displayCell = new Mat();
-		// Size displaySize2 = new Size(512,512);
-		Imgproc.resize(cell, displayCell, displaySize); // resize to draw a vector on every pixel
-
-		int maxMag = 255;
-		int maxDisplayMag = (int) (displaySize.width / cellSize.width); // max grad magnitude do draw
-
-		System.out.println("maxMag = " + maxMag);
-
-		double[] angleBuffer = new double[1];
-		double[] magBuffer = new double[1];
-		// double[][] doubleArray = new double[angle.rows()][angle.cols()];
-
-		for (int i = 0; i < cellSize.height; i++) {
-			for (int j = 0; j < cellSize.width; j++) {
-
-				angleBuffer = grad.getAngle().get(i, j);
-				double a = angleBuffer[0];
-
-				magBuffer = grad.getMag().get(i, j);
-				double m = magBuffer[0] * (double) (maxDisplayMag) / (double) (maxMag);
-				// System.out.println(a);
-				// mag.get(i, j, intBuffer);
-				// int l = intBuffer[0];
-
-				int gx = (int) ((Math.round(m * Math.cos(Math.toRadians(a)))));
-				// System.out.println("gx = " + gx);
-				int gy = (int) ((Math.round(m * Math.sin(Math.toRadians(a)))));
-				// System.out.println("gy = " + gy);
-
-				Point pp1 = new Point(maxDisplayMag * j + (maxDisplayMag - gx) / 2,
-						maxDisplayMag * i + (maxDisplayMag - gy) / 2);
-				Point pp2 = new Point(maxDisplayMag * j + (maxDisplayMag + gx) / 2,
-						maxDisplayMag * i + (maxDisplayMag + gy) / 2);
-
-				Imgproc.line(displayCell, pp1, pp2, new Scalar(0, 0, 255));
-			}
-		}
-
-		// Displaying
-		DisplayUtils.displayImage(displayCell, displayPositionX, 0);
+		// ******************** DISPLAY CELL WITH GRADIENT VECTORS *********************
+		// ****************************************************************************
+		DisplayUtils.displayGradAngle(mat, cellRect, displayPositionX, 0, displaySize);
+		
+		// ******************** DISPLAY CELL WITH GRADIENT VECTORS *********************
+		// ****************************************************************************
+		Size displaySize2 = new Size(512, 512);
+		DisplayUtils.displayGradAngle(mat, 200, (int)displaySize.height+100, displaySize2);
 	}
 
 	private static void showGradMag() {
@@ -179,12 +134,9 @@ public class GradientDemo extends DisplayUtils {
 		displayPositionX += displayOffsetX; // move offset for the next frame to display
 
 		// calculate Gradient magnitude and angle and print
-		Mat grad = new Mat(); // gradient magnitude
-		Mat angle = new Mat(); // gradient angle
-
-		HogUtils.calculateGradient(frame, grad, angle);
-		PrintUtils.printImageInfo("grad", grad);
-		DisplayUtils.displayImage(grad, displayPositionX, 0);
+		Grad grad = HogUtils.calculateGradient(frame);
+		PrintUtils.printImageInfo("grad.getMag()", grad.getMag());
+		DisplayUtils.displayImage(grad.getMag(), displayPositionX, 0);
 	}
 
 }
