@@ -47,7 +47,7 @@ public class HogUtils {
 		int sum = 0;
 		for(int j=blockPosX; j<blockPosX+blockWidth; j++) {
 			for(int k=blockPosY; k<blockPosY+blockHeight; k++) {
-				for(int i=0; i<hists[j][k].getBins().length; i++) sum += hists[j][k].getBinVal(i);
+				for(int i=0; i<hists[j][k].getBins().length; i++) sum += hists[j][k].getBinVal(i)*hists[j][k].getBinVal(i);
 				//System.out.println(hists[j][k].toString());
 			}
 		}
@@ -55,7 +55,7 @@ public class HogUtils {
 		for(int j=blockPosX; j<blockPosX+blockWidth; j++) {
 			for(int k=blockPosY; k<blockPosY+blockHeight; k++) {
 				
-				for(int i=0; i<hists[j][k].getBins().length; i++) result[j-blockPosX][k-blockPosY].setBinVal(hists[j][k].getBinVal(i)/sum, i);
+				for(int i=0; i<hists[j][k].getBins().length; i++) result[j-blockPosX][k-blockPosY].setBinVal(hists[j][k].getBinVal(i)/Math.sqrt(sum), i);
 				//System.out.println(result[j-blockPosX][k-blockPosY].toString());
 			}
 		}
@@ -71,10 +71,10 @@ public class HogUtils {
 	public static Hist normHist(Hist hist) {
 		Hist result = new Hist();
 		int sum = 0;
-		for(int i=0; i<hist.getBins().length; i++) sum += hist.getBinVal(i);
+		for(int i=0; i<hist.getBins().length; i++) sum += hist.getBinVal(i)*hist.getBinVal(i);
 		
-		for(int i=0; i<hist.getBins().length; i++) result.setBinVal(hist.getBinVal(i)/sum, i);
-		//System.out.println(result.toString());
+		if(sum<0.0001) for(int i=0; i<hist.getBins().length; i++) result.setBinVal(0.0, i);
+		else for(int i=0; i<hist.getBins().length; i++) result.setBinVal(hist.getBinVal(i)/Math.sqrt(sum), i);
 		
 		return result;
 	}
@@ -88,6 +88,7 @@ public class HogUtils {
 		
 		//Grad grad = new Grad(mag, angle);
         grad.submat(rect);
+        
 		
 		return grad;
 	}

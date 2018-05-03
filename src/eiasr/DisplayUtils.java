@@ -18,6 +18,70 @@ import org.opencv.imgproc.Imgproc;
 
 public class DisplayUtils {
 
+	public static void displayHog(Mat mat, Size cellSize, int displayPosX, int displayPosY, Size displaySize) {
+		Size matSize = mat.size(); // size of given image
+		
+		int cellCountX = (int)(matSize.width/cellSize.width); 	// count cells in row
+		int cellCountY = (int)(matSize.height/cellSize.height); // count cells in column
+		
+		// calculate Gradient magnitude and angle
+		Grad[][] grad = new Grad[cellCountX][cellCountY];
+		for( int i=0; i<cellCountX; i++) {
+			for( int j=0; j<cellCountX; j++){
+				Point cellStartPoint = new Point(i*cellSize.width, j*cellSize.height);
+				Rect cellRect = new Rect(cellStartPoint, cellSize);
+				grad[i][j] = HogUtils.calculateGradient(mat, cellRect);
+				//System.out.println(grad[i][j].getMag().dump());
+			}
+		}
+		
+		// calculate histogram for every cell
+		Hist[][] hist = HogUtils.calculateHist(grad);
+		
+		// normalize histograms
+		for( int i=0; i<cellCountX; i++) {
+			for( int j=0; j<cellCountX; j++) {
+				//System.out.println(hist[i][j].toString());
+				hist[i][j] = HogUtils.normHist(hist[i][j]);
+				//System.out.println(hist[i][j].toString());
+			}
+			
+		}	
+		Mat displayMat = new Mat();
+
+		Imgproc.resize(mat, displayMat, displaySize); // resize to draw a vector on every cell
+
+		int maxHist = 1;
+		int maxDisplayHist = (int) (displaySize.width / matSize.width * cellSize.width); // max grad magnitude do draw
+		System.out.println("maxDisplayMag = " + maxDisplayHist);
+
+		for (int i = 0; i < (int)(matSize.height/cellSize.height); i++) {
+			for (int j = 0; j < (int)(matSize.width/ cellSize.width); j++) {
+				
+				for (int k = 0; k < hist[i][j].getBins().length; k++){
+					double a = k*Hist.degInterval + 90.0;
+					double m = hist[i][j].getBinVal(k) * (double) (maxDisplayHist) / (double) (maxHist);
+					int gx = (int) ((Math.round(m * Math.cos(Math.toRadians(a)))));
+					int gy = (int) ((Math.round(m * Math.sin(Math.toRadians(a)))));
+
+					Point pp1 = new Point(maxDisplayHist * i + (maxDisplayHist - gx) / 2,
+							maxDisplayHist * j + (maxDisplayHist - gy) / 2);
+					//System.out.println("pp1:" + pp1.toString());
+					Point pp2 = new Point(maxDisplayHist * i + (maxDisplayHist + gx) / 2,
+							maxDisplayHist * j + (maxDisplayHist + gy) / 2);
+					//System.out.println("pp2:" + pp2.toString());
+	
+					Imgproc.line(displayMat, pp1, pp2, new Scalar(0, 0, 255));
+				}
+
+
+			}
+		}
+
+		// Displaying
+		DisplayUtils.displayImage(displayMat, displayPosX, displayPosY);
+	}
+
 	public static void displayGradAngle(Mat mat, Rect roi, int x, int y, Size displaySize) {
 		// calculate Gradient magnitude and angle and print
 		Grad grad = HogUtils.calculateGradient(mat, roi);
