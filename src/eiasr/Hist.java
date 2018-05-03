@@ -2,8 +2,6 @@ package eiasr;
 
 import java.util.Arrays;
 
-import org.opencv.core.Mat;
-
 public class Hist {
 	final static double degInterval = 20.0; // interval between following bins in degrees 
 	
