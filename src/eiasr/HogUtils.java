@@ -10,6 +10,63 @@ public class HogUtils {
 	
 	static final int ddepth = CvType.CV_32F;
 	
+	/**
+	 * Given Gradient object containing matrixes of gradient magnitude and direction (angle)
+	 * for every pixel, returning Histogram of Oriented Gradients
+	 * @param grad	Gradient (Grad) object 
+	 * @return 		Histogram (Hist) object
+	 * @see Hist
+	 */
+	public static Hist calculateHog(Grad grad) {
+		return new Hist(grad);
+	}
+	/**
+	 * 
+	 * @param hists
+	 * @param winWidth
+	 * @param winHeight
+	 * @return
+	 */
+	public static Hist[][] normHist(Hist[][] hists, int winWidth, int winHeight) {
+		Hist[][] result = new Hist[winWidth][winHeight];
+		for(int i=0; i<winWidth; i++) {
+			for(int j=0; j<winHeight; j++) result[i][j] = new Hist();
+		}
+		
+		int sum = 0;
+		for(int j = 0; j<winWidth; j++){
+			for(int k = 0; k<winHeight; k++) {
+				for(int i=0; i<hists[j][k].getBins().length; i++) sum += hists[j][k].getBinVal(i);
+				//System.out.println(hists[j][k].toString());
+			}
+		}
+		
+		for(int j = 0; j<winWidth; j++){
+			for(int k = 0; k<winHeight; k++) {
+				for(int i=0; i<hists[j][k].getBins().length; i++) result[j][k].setBinVal(hists[j][k].getBinVal(i)/sum, i);
+				//System.out.println(result[j][k].toString());
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param hist
+	 * @return
+	 */
+	public static Hist normHist(Hist hist) {
+		Hist result = new Hist();
+		int sum = 0;
+		for(int i=0; i<hist.getBins().length; i++) sum += hist.getBinVal(i);
+		
+		for(int i=0; i<hist.getBins().length; i++) result.setBinVal(hist.getBinVal(i)/sum, i);
+		//System.out.println(result.toString());
+		
+		return result;
+	}
+	
 	public static Grad calculateGradient(Mat img, Rect rect){
 		Mat mag = new Mat();
 		Mat angle = new Mat();
@@ -17,27 +74,9 @@ public class HogUtils {
 		// calculate gradient for whole image
 		calculateGradient(img, mag, angle);
 		
-//		//Printing
-//        System.out.println("Gradient magnitude:");
-//        System.out.println(mag.dump());
-//        PrintUtils.printImageInfo("mag", mag);
-//             
-//        System.out.println("Gradient angle:");
-//        System.out.println(angle.dump());
-//        PrintUtils.printImageInfo("angle", angle);
-		
-		// trim matrixes of gradient magnitudes and angles to given rect
 		Grad grad = new Grad(mag, angle);
         grad.submat(rect);
 		
-//		//Printing
-//        System.out.println("Gradient magnitude:");
-//        System.out.println(grad.getMag().dump());
-//        PrintUtils.printImageInfo("grad.getMag()", grad.getMag());
-//             
-//        System.out.println("Gradient angle:");
-//        System.out.println(grad.getAngle());
-//        PrintUtils.printImageInfo("grad.getAngle()", grad.getAngle());
 		return grad;
 	}
 
