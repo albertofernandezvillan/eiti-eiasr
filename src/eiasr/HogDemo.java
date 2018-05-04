@@ -70,6 +70,16 @@ public class HogDemo {
 		// ******************** VISUALIZE HOG **************************
 		
 		DisplayUtils.displayHog(mat, cellSize, displayPositionX, 0, displaySize); // display image
+		
+		// *************CALC AND PRINT HOG DESCRIPTOR ********************
+		HogDesc hogDesc = new HogDesc();
+		double[] hog = hogDesc.getHogDescriptor(mat);
+		System.out.println("FULL HOG DESCRIPTOR (length = " + hog.length + "):" );
+		for(int i =0; i<hog.length; i++) {
+			if (i%18==0) System.out.println(" ");
+			System.out.print(hog[i] + " ");
+		}
+			
 
 	}
 

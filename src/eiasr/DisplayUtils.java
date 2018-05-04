@@ -40,7 +40,7 @@ public class DisplayUtils {
 		
 		// normalize histograms
 		for( int i=0; i<cellCountX; i++) {
-			for( int j=0; j<cellCountX; j++) {
+			for( int j=0; j<cellCountY; j++) {
 				//System.out.println(hist[i][j].toString());
 				hist[i][j] = HogUtils.normHist(hist[i][j]);
 				//System.out.println(hist[i][j].toString());
