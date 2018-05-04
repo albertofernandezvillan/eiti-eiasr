@@ -31,9 +31,10 @@ Calculatig HOG descriptor consists of few steps:
 
 #### Preprocessing
 
-  For now only preprocessign is resizing input images to the same size 64x64 pixels. It is be determined if using additinal preprocessing (e.g. blurring) would increase effectiveness of utilizing HOGs
   
 <img align="right" height=230 src="/doc/img/Selection_002.png">
+
+For now only preprocessign is resizing input images to the same size 64x64 pixels. It is be determined if using additinal preprocessing (e.g. blurring) would increase effectiveness of utilizing HOGs
 
 #### Gradient calcualations
 
