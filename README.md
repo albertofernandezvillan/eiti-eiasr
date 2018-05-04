@@ -23,7 +23,7 @@ Second, easier resource is [article by Satya Mallick](https://www.learnopencv.co
 
 ## HOG descriptor
 
-<img align="right" height=256 src="/doc/img/Selection_004.png">
+<img align="right" height=230 src="/doc/img/Selection_004.png">
 
 First challenge working with Java OpenCV is that there is no native methods to even display simple image (openCV Image or Mat object). Utilities to display images and visualize features are implemented from scratch in [DisplayUtils class](/src/eiasr/DisplayUtils.java).
 
@@ -33,7 +33,7 @@ Calculatig HOG descriptor consists of few steps:
 
   For now only preprocessign is resizing input images to the same size 64x64 pixels. It is be determined if using additinal preprocessing (e.g. blurring) would increase effectiveness of utilizing HOGs
   
-<img align="right" height=256 src="/doc/img/Selection_002.png">
+<img align="right" height=230 src="/doc/img/Selection_002.png">
 
 #### Gradient calcualations
 
@@ -45,7 +45,7 @@ Image is divided into 8x8 pixels cells, what give 8 cells in each row and column
 
 #### Building Histogram for every Cell
 
-<img align="right" height=256 src="/doc/img/Selection_003.png">
+<img align="right" height=230 src="/doc/img/Selection_003.png">
 
 Having calculated gradient in every cell, histograms are built. Histogram consists of 18 bins gor gradient direction (360 degrees divided with interval of 20 degrees). Basing on gradient direction in given pixel magnitude is splited and added to pratcular bins. Similiar histogram is build for every cell.
 
