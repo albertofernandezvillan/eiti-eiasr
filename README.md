@@ -31,10 +31,9 @@ Calculatig HOG descriptor consists of few steps:
 
 #### Preprocessing
 
-  
+For now only preprocessign is resizing input images to the same size 64x64 pixels. It is be determined if using additinal preprocessing (e.g. blurring) would increase effectiveness of utilizing HOGs.
+ 
 <img align="right" height=230 src="/doc/img/Selection_002.png">
-
-For now only preprocessign is resizing input images to the same size 64x64 pixels. It is be determined if using additinal preprocessing (e.g. blurring) would increase effectiveness of utilizing HOGs
 
 #### Gradient calcualations
 
@@ -48,7 +47,7 @@ Image is divided into 8x8 pixels cells, what give 8 cells in each row and column
 
 <img align="right" height=230 src="/doc/img/Selection_003.png">
 
-Having calculated gradient in every cell, histograms are built. Histogram consists of 18 bins gor gradient direction (360 degrees divided with interval of 20 degrees). Basing on gradient direction in given pixel magnitude is splited and added to pratcular bins. Similiar histogram is build for every cell.
+Having calculated gradient in every cell, histograms are built. Histogram consists of 18 bins gor gradient direction (360 degrees divided with interval of 20 degrees). <img align="right" height=230 src="/doc/img/Selection_003.png"> Basing on gradient direction in given pixel magnitude is splited and added to pratcular bins. Similiar histogram is build for every cell.
 
 #### Histogram Normalization in Blocks of Cells
 
