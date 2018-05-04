@@ -27,8 +27,8 @@ Second, easier resource is [article by Satya Mallick](https://www.learnopencv.co
 
 First challenge working with Java OpenCV is that there is no native methods to even display simple image (openCV Image or Mat object). Utilities to display images and visualize features are implemented from scratch in [DisplayUtils class](/src/eiasr/DisplayUtils.java).
 
-
 Calculatig HOG descriptor consists of few steps:
+
 #### Preprocessing
 
   For now only preprocessign is resizing input images to the same size 64x64 pixels. It is be determined if using additinal preprocessing (e.g. blurring) would increase effectiveness of utilizing HOGs
