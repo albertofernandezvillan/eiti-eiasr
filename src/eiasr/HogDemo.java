@@ -25,8 +25,9 @@ public class HogDemo {
 		// ********************* LOAD IMAGE *******************************
 
 		// Read from file
-		Mat input = Imgcodecs.imread("GTSRB/Final_Training/Images/00015/00002_00027.ppm", CvType.CV_32F);
-		//Mat input = Imgcodecs.imread("GTSRB/Final_Training/Images/00000/00004_00020.ppm", CvType.CV_32F);
+		Mat input = Imgcodecs.imread("GTSRB/train/00002/00002_00027.ppm", CvType.CV_32F);
+		//Mat input = Imgcodecs.imread("GTSRB/train/00000/00004_00020.ppm", CvType.CV_32F);
+		//Mat input = Imgcodecs.imread("GTSRB/train/00000/00002_00027.ppm", CvType.CV_32F);
 
 		// Print Info and Image
 		PrintUtils.printImageInfo("input", input);

@@ -33,7 +33,7 @@ public class GradientDemo extends DisplayUtils {
 		// ****************************************************************
 
 		// Read from file
-		Mat input = Imgcodecs.imread("GTSRB/Final_Training/Images/00015/00002_00027.ppm", CvType.CV_32F);
+		Mat input = Imgcodecs.imread("GTSRB/train/00000/00002_00027.ppm", CvType.CV_32F);
 
 		// Print Info and Image
 		PrintUtils.printImageInfo("input", input);
@@ -56,8 +56,8 @@ public class GradientDemo extends DisplayUtils {
 		// ********************* CHOOSE THE 8x8 CELL *******************
 		// *************************************************************
 
-		Point p1 = new Point(0, 56);
-		Point p2 = new Point(0 + cellSize.height, 56 + cellSize.width);
+		Point p1 = new Point(16, 16);
+		Point p2 = new Point(16 + cellSize.height, 16 + cellSize.width);
 		Rect cellRect = new Rect(p1, p2); // 8x8 cell definition
 
 		Mat displayMat = new Mat(); // make a copy for displaying
@@ -99,7 +99,7 @@ public class GradientDemo extends DisplayUtils {
 
 	private static void showGradMag() {
 		// Read from file
-		Mat input = Imgcodecs.imread("GTSRB/Final_Training/Images/00015/00002_00027.ppm", CvType.CV_32F);
+		Mat input = Imgcodecs.imread("GTSRB/train/00015/00002_00027.ppm", CvType.CV_32F);
 		// Print Info and Image
 		PrintUtils.printImageInfo("input", input);
 		DisplayUtils.displayImage(input);
