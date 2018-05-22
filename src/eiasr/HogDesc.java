@@ -11,6 +11,7 @@ public class HogDesc {
 	private int blockSizeY = 2;
 	private double histInterval = 20; 			// 20 degree interval between histogram bins
 	private Size imgSize = new Size(64, 64); 	// size of image to describe (in pixels)
+	private Size cellSize = new Size(8, 8); 	// size of image to describe (in pixels)
 	
 	public HogDesc() {	
 		super();
@@ -112,7 +113,7 @@ public class HogDesc {
 	public void setCellSize(Size cellSize) {
 		this.cellSize = cellSize;
 	}
-	Size cellSize = new Size(8, 8); 	// size of image to describe (in pixels)
+	
 	
 	
 	
