@@ -7,6 +7,7 @@ import java.util.List;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.core.TermCriteria;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -17,9 +18,9 @@ import org.opencv.ml.TrainData;
 public class Classification {
 	public static final String SVM_MODEL_FILE_PATH = "resources/b_process/svm/model/svm.xml";
 
-    public static final String ROOT = "GTSRB/";
+    public static final String ROOT = "GTSDB/";
 
-    public static final String TEST_PATH = "test/";
+    public static final String TEST_PATH = "test/classification/";
     public static final String TRAIN_PATH = "train/";
     public static final String SVM_MODEL_PATH = "model/svm.xml";
 
@@ -36,14 +37,18 @@ public class Classification {
 	
     void train(){
 
-        List<File> c1files = getFiles(ROOT+TRAIN_PATH+ "00015/" );
-        List<File> c2files = getFiles(ROOT+TRAIN_PATH+ "00020/" );
+        List<File> c1files = getFiles(ROOT+TRAIN_PATH+ "13/" );
+        List<File> c2files = getFiles(ROOT+TRAIN_PATH+ "01/" );
+        List<File> c3files = getFiles(ROOT+TRAIN_PATH+ "no/" );
+        
         
         int c1Count = c1files.size();
         int c2Count = c2files.size();
+        int c3Count = c3files.size();
         
         System.out.println("c1Count = " + c1Count);
         System.out.println("c2Count = " + c2Count);
+        System.out.println("c3Count = " + c3Count);
 
         Mat samples = new Mat();
         Mat labels = new Mat();
@@ -73,6 +78,23 @@ public class Classification {
             labels.push_back( Mat.zeros( new Size( 1, 1 ), CvType.CV_32S ) );
         }
         
+        for (int i = 0; i < c3Count; i++) {
+        	Mat img = Imgcodecs.imread(c3files.get(i).getAbsolutePath(), CvType.CV_32F);
+            //DisplayUtils.displayImage(img);
+            HogDesc hogDesc = new HogDesc();
+            double[] hog = hogDesc.getHogDescriptor(img);
+            Mat hogMat = new Mat(new Size(hog.length,1),CvType.CV_32F);
+            //PrintUtils.printImageInfo("hogMat", hogMat);
+            hogMat.put(0, 0, hog);            
+            samples.push_back( hogMat );
+            
+            Mat twos = new Mat();
+            Core.multiply(Mat.ones( new Size( 1, 1 ),  CvType.CV_32S ), new Scalar(2.0), twos );
+            //PrintUtils.printImageInfo("twos", twos);
+            //System.out.println(twos.dump());
+            labels.push_back(twos);
+        }
+        
         PrintUtils.printImageInfo("samples", samples);
         PrintUtils.printImageInfo("labels", labels);
 
@@ -85,17 +107,16 @@ public class Classification {
         
       //SVM
         SVM svm = SVM.create();
-//        svm.setType(SVM.C_SVC);
-//        svm.setKernel(SVM.LINEAR);
+        svm.setType(SVM.C_SVC);
+        svm.setKernel(SVM.LINEAR);
 //        svm.setDegree(0.1);
-//        // 1.4 bug fix: old 1.4 ver gamma is 1
-//        svm.setGamma(0.1);
+        svm.setGamma(0.1);
 //        svm.setCoef0(0.1);
-//        svm.setC(0.1);
-//        svm.setNu(0.1);
+        svm.setC(0.1);
+//       svm.setNu(0.1);
 //        svm.setP(0.1);
         
-        //svm.setTermCriteria(new TermCriteria(1, 20000, 0.0001));
+        svm.setTermCriteria(new TermCriteria(1, 20000, 0.0001));
 
 
         long start = System.currentTimeMillis();
@@ -112,11 +133,13 @@ public class Classification {
         System.out.println(svm.getSupportVectors());
         
         
-        List<File> c1TestFiles = getFiles(ROOT+TEST_PATH + "00015" );
-        List<File> c2TestFiles = getFiles(ROOT+TEST_PATH + "00020" );
+        List<File> c1TestFiles = getFiles(ROOT+TEST_PATH + "13" );
+        List<File> c2TestFiles = getFiles(ROOT+TEST_PATH + "01" );
+        List<File> c3TestFiles = getFiles(ROOT+TEST_PATH + "no" );
         
         int c1TestCount = c1TestFiles.size();
         int c2TestCount = c2TestFiles.size();
+        int c3TestCount = c3TestFiles.size();
         
         for (int i = 0; i < c1TestCount; i++) {
         	Mat img = Imgcodecs.imread(c1TestFiles.get(i).getAbsolutePath(), CvType.CV_32F);
@@ -143,11 +166,27 @@ public class Classification {
             System.out.println(svm.predict(hogMat));
             
         }
-
-
-   
+        
+        for (int i = 0; i < c3TestCount; i++) {
+        	Mat img = Imgcodecs.imread(c3TestFiles.get(i).getAbsolutePath(), CvType.CV_32F);
+        	System.out.print(c3TestFiles.get(i).getAbsolutePath() + "\t");
+            //DisplayUtils.displayImage(img);          
+            HogDesc hogDesc = new HogDesc();
+            double[] hog = hogDesc.getHogDescriptor(img);     
+            Mat hogMat = new Mat(new Size(hog.length,1),CvType.CV_32F);
+            //PrintUtils.printImageInfo("hogMat", hogMat);
+            hogMat.put(0, 0, hog);    
+            System.out.println(svm.predict(hogMat));
+            
+        }
         
     }
+    
+    
+    
+    
+    
+    
     
     public List<File> getFiles(String dirPath){
         List<File> list = new ArrayList<File>();
